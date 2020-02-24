@@ -414,7 +414,7 @@ in (if (config.redbrick.skipVhosts) then {} else userVhosts // {
   "git.${tld}" = vhostProxy "http://localhost:3000";
   "prometheus.${tld}" = vhostProxy "http://localhost:9090";
   "graphs.${tld}" = vhostProxy "http://localhost:3001";
-  "dcufm.${tld}" = vhostProxy "http://136.206.15.74";
+  "dcufm.${tld}" = vhostProxy "http://localhost:8002";
   "jakarta.${tld}" = vhostProxy "http://136.206.15.59:8080";
   "lists.${tld}" = vhostProxy "http://mail.internal:80";
   "macspayn.${tld}" = vhostProxy "http://136.206.15.25:3007";
