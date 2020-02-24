@@ -1,6 +1,11 @@
 {
   services.postgresql = {
     enable = true;
-    dataDir = "/zroot/postgres";
+    dataDir = "/var/db/postgres";
+  };
+
+  services.prometheus.exporters.postgres = {
+    enable = true;
+    openFirewall = true;
   };
 }

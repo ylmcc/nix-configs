@@ -44,8 +44,8 @@ in {
       TEMP_PATH = ${stateDir}/uploads
 
       [server]
-      SSH_DOMAIN       = git.redbrick.dcu.ie
-      DISABLE_SSH      = false
+      SSH_DOMAIN       = git.${tld}
+      DISABLE_SSH      = true
       SSH_PORT         = 10022
       LFS_START_SERVER = false
       OFFLINE_MODE     = false
@@ -84,8 +84,11 @@ in {
       [openid]
       ENABLE_OPENID_SIGNUP = false
       ENABLE_OPENID_SIGNIN = false
+
+      [metrics]
+      ENABLED = true
+      [log.console]
+      COLORIZE = false
     '';
   };
-
-  networking.firewall.allowedTCPPorts = [ 3000 ];
 }
