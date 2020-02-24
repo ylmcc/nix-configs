@@ -6,6 +6,7 @@
     ../../services/ssh.nix
     ../../services/gluster.nix
     ../../services/ldap
+    ../../services/bitlbee.nix
   ];
 
   # This value determines the NixOS release with which your system is to be

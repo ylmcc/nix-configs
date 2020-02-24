@@ -5,23 +5,38 @@
 let
   common = import ../../common/variables.nix;
 in {
-  imports =
-    [ <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
-    ];
+  imports = [
+    <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
+  ];
 
-  boot.initrd.availableKernelModules = [ "uhci_hcd" "ehci_pci" "ata_piix" "megaraid_sas" "usbhid" "usb_storage" "sd_mod" "sr_mod" ];
+  boot.initrd.availableKernelModules = [
+    "uhci_hcd"
+    "ehci_pci"
+    "ata_piix"
+    "megaraid_sas"
+    "usbhid"
+    "usb_storage"
+    "sd_mod"
+    "sr_mod"
+  ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
-  fileSystems."/" =
-    { device = "/dev/disk/by-uuid/753b1b37-a04b-4808-862e-a6116b02b48a";
-      fsType = "ext4";
-    };
+  fileSystems."/" = {
+    device = "/dev/disk/by-uuid/753b1b37-a04b-4808-862e-a6116b02b48a";
+    fsType = "ext4";
+  };
 
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/712eeccf-195e-4fda-b717-9882ac1848dc";
-      fsType = "ext4";
-    };
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-uuid/712eeccf-195e-4fda-b717-9882ac1848dc";
+    fsType = "ext4";
+  };
+
+  # zfs create -o dedup=off -o mountpoint=legacy -o recordsize=4K  zroot/bitlbee
+  fileSystems."/var/lib/bitlbee" = {
+    device = "zroot/bitlbee";
+    fsType = "zfs";
+  };
 
   fileSystems."/gstorage/brick1/gvhomes" = common.zfsMountConfig "zbrick1/gvhomes";
   fileSystems."/gstorage/brick2/gvhomes" = common.zfsMountConfig "zbrick2/gvhomes";
@@ -35,9 +50,9 @@ in {
   fileSystems."/gstorage/brick2/gvarchive" = common.zfsMountConfig "zbrick2/gvarchive";
   fileSystems."/gstorage/brick3/gvarchive" = common.zfsMountConfig "zbrick3/gvarchive";
 
-  swapDevices =
-    [ { device = "/dev/disk/by-uuid/66307090-88b1-4467-acfe-a22c2a06e2ce"; }
-    ];
+  swapDevices = [
+    { device = "/dev/disk/by-uuid/66307090-88b1-4467-acfe-a22c2a06e2ce"; }
+  ];
 
   nix.maxJobs = lib.mkDefault 8;
 }
