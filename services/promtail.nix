@@ -74,6 +74,59 @@ let
       }
     ];
   };
+  httpd = {
+    job_name = "httpd";
+    pipeline_stages = [{
+      match = {
+        selector = "{type=\"access\"}";
+        stages = [
+          {
+            regex = {
+              expression = ''^(?P<clientAddr>\S+) (\S+) (?P<uid>\S+) \[(?P<time>[\w:/]+\s[+\-]\d{4})\] "(?P<method>\S+) (?P<path>\S+)? (?P<version>\S+)" (?P<status>\d{3}) (?P<bytes>\d+)$'';
+            };
+          }
+          {
+            labels = {
+              clientAddr = null;
+              method = null;
+              path = null;
+              version = null;
+              status = null;
+              time = null;
+              uid = null;
+              bytes = null;
+            };
+          }
+          {
+            timestamp = {
+              source = "time";
+              format = "10/Oct/2000:13:55:36 -0700";
+            };
+          }
+        ];
+      };
+    }];
+    static_configs = [
+      {
+        targets = [ "localhost" ];
+        labels = {
+          job = "httpd";
+          type = "access";
+          host = "hardcase";
+          __path__ = "/var/log/httpd/access-*.log";
+        };
+      }
+      {
+        targets = [ "localhost" ];
+        labels = {
+          job = "httpd";
+          host = "hardcase";
+          type = "error";
+          __path__ = "/var/log/httpd/error-*.log";
+        };
+      }
+    ];
+  };
   configuration = {
     server = {
       http_listen_port = 9080;
@@ -82,7 +135,10 @@ let
     clients = [{
       url = "http://log.internal:3100/loki/api/v1/push";
     }];
-    scrape_configs = [ syslog ];
+    scrape_configs = [
+      syslog
+      httpd
+    ];
   };
 in {
   systemd.services.promtail = {
@@ -93,6 +149,8 @@ in {
       Restart = "always";
       WorkingDirectory = dataDir;
       StateDirectory = "promtail";
+      # Needs to be increased because each vhost has a log file
+      LimitNOFILE = 16384;
     };
   };
 
