@@ -76,36 +76,66 @@ let
   };
   httpd = {
     job_name = "httpd";
-    pipeline_stages = [{
-      match = {
-        selector = "{type=\"access\"}";
-        stages = [
-          {
-            regex = {
-              expression = ''^(?P<clientAddr>\S+) (\S+) (?P<uid>\S+) \[(?P<time>[\w:/]+\s[+\-]\d{4})\] "(?P<method>\S+) (?P<path>\S+)? (?P<version>\S+)" (?P<status>\d{3}) (?P<bytes>\d+)$'';
-            };
-          }
-          {
-            labels = {
-              clientAddr = null;
-              method = null;
-              path = null;
-              version = null;
-              status = null;
-              time = null;
-              uid = null;
-              bytes = null;
-            };
-          }
-          {
-            timestamp = {
-              source = "time";
-              format = "10/Oct/2000:13:55:36 -0700";
-            };
-          }
-        ];
-      };
-    }];
+    pipeline_stages = [
+      {
+        match = {
+          selector = ''{type="access"}'';
+          stages = [
+            {
+              regex = {
+                expression = ''^(?P<clientAddr>\S+) (\S+) (?P<uid>\S+) \[(?P<time>[\w:/]+\s[+\-]\d{4})\] "(?P<method>\S+) (?P<path>\S+)? (?P<version>\S+)" (?P<status>\d{3}) (?P<bytes>\d+)$'';
+              };
+            }
+            {
+              labels = {
+                clientAddr = null;
+                method = null;
+                path = null;
+                version = null;
+                status = null;
+                time = null;
+                uid = null;
+                bytes = null;
+              };
+            }
+            {
+              timestamp = {
+                source = "time";
+                format = "10/Oct/2000:13:55:36 -0700";
+              };
+            }
+          ];
+        };
+      }
+      {
+        match = {
+          selector = ''{type="error"}'';
+          stages = [
+            {
+              regex = {
+                expression = ''^\[(?P<time>[\w:\s/\.\d]+)\]\s\[(?P<process>[\w_.]+):(?P<level>\w+)\]\s\[\w+\s(?P<pid>\d+):\w+\s(?P<tid>\d+)\]\s(?P<message>[\w\s\/.("):\d]*?)\s*?\[\w+\s(?P<clientAddr>[\d\/.:]+)\]\s(?P<error>[\w\d\s\/.=?:&'"-]+)$'';
+              };
+            }
+            {
+              labels = {
+                process = null;
+                pid = null;
+                message = null;
+                level = null;
+                clientAddr = null;
+                path = null;
+              };
+            }
+            {
+              timestamp = {
+                source = "time";
+                format = "Tue Oct 10 13:55:36.384032 2000";
+              };
+            }
+          ];
+        };
+      }
+    ];
     static_configs = [
       {
         targets = [ "localhost" ];
