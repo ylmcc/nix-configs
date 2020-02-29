@@ -95,10 +95,10 @@ in {
   services.httpd = {
     inherit adminAddr virtualHosts;
     enable = true;
-    extraModules = [ "suexec" "proxy" "proxy_fcgi" "proxy_uwsgi" "ldap" "authnz_ldap" ];
+    extraModules = [ "suexec" "proxy" "proxy_fcgi" "proxy_uwsgi" "ldap" "authnz_ldap" "journald" ];
     mpm = "event";
     maxClients = 250;
-
+    logPerVirtualHost = false;
     extraConfig = ''
       ProxyRequests off
       ProxyVia Off
@@ -138,6 +138,12 @@ in {
       <IfModule mod_suexec>
         Suexec On
       </IfModule>
+
+      ErrorLogFormat "{ \"app\": \"httpd\", \"level\":\"ERROR\", \"time\":\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\", \"function\": \"%-m:%l\" , \"pid\": \"%P\", \"tid\": \"%T\", \"message\": \"%M\", \"referer\": \"%{Referer}i\" }"
+      LogFormat "{ \"app\": \"httpd\", \"time\":\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\", \"remoteIP\":\"%a\", \"host\":\"%V\", \"request\":\"%U\", \"query\":\"%q\", \"method\":\"%m\", \"status\":\"%>s\", \"userAgent\":\"%{User-agent}i\", \"referer\":\"%{Referer}i\" }" accessJson
+
+      ErrorLog journald
+      CustomLog journald accessJson
     '';
   };
 
