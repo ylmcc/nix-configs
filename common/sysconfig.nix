@@ -3,7 +3,10 @@ let
   common = import ./variables.nix;
   tld = config.redbrick.tld;
 in {
-  imports = [ ./options.nix ];
+  imports = [
+    ./options.nix
+    ../packages/overlays
+  ];
 
   time.timeZone = "Europe/Dublin";
   i18n.defaultLocale = "en_IE.UTF-8";
@@ -55,6 +58,14 @@ in {
       "time"
       "vmstat"
     ];
+  };
+
+  # Enabled Spare cpu cycles to be used for folding@home
+  services.foldingathome = {
+    enable = true;
+    user = "redbrick";
+    team = 43166;
+    extraArgs = [ "--power" "light" ];
   };
 
   # Enable LDAP

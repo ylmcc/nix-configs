@@ -9,7 +9,6 @@
     ../../services/postfix
     ../../services/dovecot
     ../../services/certs
-    ../../services/thelounge.nix
     ../../services/postgres.nix
   ];
 
@@ -17,7 +16,7 @@
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
   # should.
-  system.stateVersion = "19.09";
+  system.stateVersion = "20.09";
 
   # Use the GRUB 2 boot loader.
   boot.loader.grub.enable = true;
@@ -35,8 +34,10 @@
   };
 
   # Dev box, skip loading vhosts
-  redbrick.skipVhosts = true;
-  redbrick.tld = "redbricktest.ml";
+  redbrick.tld = "redbricktest.cf";
+  redbrick.skipCustomVhosts = true;
+  redbrick.smtpBindAddress = "192.168.0.135";
+  redbrick.smtpExternalAddress = "136.206.15.5";
 
   users.users.lucasade = {
     isNormalUser = true;

@@ -7,8 +7,8 @@
       type = lib.types.nullOr lib.types.str;
     };
 
-    skipVhosts = lib.mkOption {
-      description = "Skip compiling the list of vhosts. Useful for development boxes";
+    skipCustomVhosts = lib.mkOption {
+      description = "Skip all vhosts that are not based on the TLD. Useful for development boxes";
       default = false;
       defaultText = "False (compile the vhosts)";
       type = lib.types.nullOr lib.types.bool;
@@ -19,6 +19,18 @@
       default = null;
       defaultText = "Null (this is a master)";
       type = lib.types.nullOr lib.types.str;
+    };
+
+    smtpBindAddress = lib.mkOption {
+      description = "Address that Postfix expects to send and receive mail on";
+      default = "192.168.0.158";
+      type = lib.types.str;
+    };
+
+    smtpExternalAddress = lib.mkOption {
+      description = "The appropriate public IP forwarding port 587/993 for this mail host";
+      default = "136.206.15.3";
+      type = lib.types.str;
     };
   };
 }
