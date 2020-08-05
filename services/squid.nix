@@ -79,6 +79,8 @@ let
     http_port 3128 ssl-bump \
       cert=${certKeyPath} \
       generate-host-certificates=on dynamic_cert_mem_cache_size=16MB
+
+    # Set up intercept port for use with iptables NAT rules
     https_port 3129 intercept ssl-bump \
       cert=${certKeyPath} \
       generate-host-certificates=on dynamic_cert_mem_cache_size=16MB
@@ -109,11 +111,11 @@ in {
     inherit configText;
   };
 
-  networking.firewall.allowedUDPPorts = [ 3128 3129 ];
+  networking.firewall.allowedTCPPorts = [ 3128 3129 ];
 
   networking.hosts."127.0.0.1" = [ "proxy.internal" ];
 
-  systemd.services.squid.preStart = pkgs.lib.mkMerge ''
+  systemd.services.squid.preStart = ''
     test -e /var/cache/squid/ssl_db || ${pkgs.squid}/libexec/security_file_certgen -c -s /var/cache/squid/ssl_db
   '';
 }
